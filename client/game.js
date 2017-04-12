@@ -1,13 +1,15 @@
 var socket;
+var player;
 
 setup = () => {
-  socket = io.connect('http://localhost:3000/');
   createCanvas(600, 600);
-  background(51);
+
+  socket = io.connect('http://localhost:3000/');
+  player = new Player();
 }
 
 draw = () => {
-  noStroke();
-  fill(255);
-  ellipse(mouseX, mouseY, 20);
+  background(255);
+  player.update();
+  player.render();
 }
