@@ -6,7 +6,7 @@ class Player {
     this.speed = 0;
     this.color = "255, 0, 0";
 
-    updateSocketData();
+    this.updateSocketData();
   }
 
   updateSocketData() {
@@ -34,7 +34,7 @@ class Player {
     // update speed of movement
     this.vel.mag = 5 * this.speed;
 
-    updateSocketData();
+    this.updateSocketData();
   }
 
   render() {
