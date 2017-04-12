@@ -1,14 +1,40 @@
 class Player {
   constructor(x = width/2, y = height/2) {
     this.pos = {x: x, y: y};
-    this.vel = 0;
-    this.dir = 3*PI/2;
-    this.color = 51;
+    this.vel = {teta: 3*PI/2, mag: 2};
+    this.dir = 0;
+    this.speed = 0;
+    this.color = "255, 0, 0";
+
+    updateSocketData();
+  }
+
+  updateSocketData() {
+    this.socketData = {
+      x: this.pos.x,
+      y: this.pos.y
+    }
   }
 
   update() {
-    this.pos.x += this.vel * Math.cos(this.dir);
-    this.pos.y += this.vel * Math.sin(this.dir);
+
+    // update position
+    this.pos.x += this.vel.mag * Math.cos(this.vel.teta);
+    this.pos.y += this.vel.mag * Math.sin(this.vel.teta);
+
+    // border wrap
+    if(this.pos.x < 0) this.pos.x = width;
+    if(this.pos.x > width) this.pos.x = 0;
+    if(this.pos.y < 0) this.pos.y = height;
+    if(this.pos.y > height) this.pos.y = 0;
+
+    // update angle of movement
+    this.vel.teta += PI/32 * this.dir;
+
+    // update speed of movement
+    this.vel.mag = 5 * this.speed;
+
+    updateSocketData();
   }
 
   render() {
@@ -16,12 +42,12 @@ class Player {
     push();     // start new drawing state
 
     translate(this.pos.x, this.pos.y);
-    rotate(this.dir + PI/2);
+    rotate(this.vel.teta + PI/2);
     translate(0, -4*s);
 
     // draw triangle
     strokeWeight(2);
-    stroke(0);
+    stroke(255,0,0);
     noFill();
     triangle(0, 0, -3*s, 8*s, 3*s, 8*s);
 
