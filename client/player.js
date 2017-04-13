@@ -4,7 +4,7 @@ class Player {
     this.vel = {teta: 3*PI/2, mag: 2};
     this.dir = 0;
     this.speed = 0;
-    this.color = "255, 0, 0";
+    this.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 
     this.updateSocketData();
   }
@@ -12,7 +12,9 @@ class Player {
   updateSocketData() {
     this.socketData = {
       x: this.pos.x,
-      y: this.pos.y
+      y: this.pos.y,
+      teta: this.vel.teta,
+      color: this.color
     }
   }
 
@@ -47,13 +49,13 @@ class Player {
 
     // draw triangle
     strokeWeight(2);
-    stroke(255,0,0);
+    stroke(this.color);
     noFill();
     triangle(0, 0, -3*s, 8*s, 3*s, 8*s);
 
     // draw centroid
     noStroke();
-    fill(255,0,0);
+    fill(this.color);
     ellipse(0, 4*s ,s);
 
     pop();     // restore previous state
