@@ -59,5 +59,9 @@ class Player {
     ellipse(0, 4*s ,s);
 
     pop();     // restore previous state
+
+    textSize(16);
+    //rect(this.pos.x - 3*s, this.pos.y + 6*s, 6*s, 3*s);
+    text(this.name, this.pos.x - 3*s, this.pos.y + 6*s, 6*s, 3*s);
   }
 }

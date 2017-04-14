@@ -30,10 +30,11 @@ io.sockets.on('connection',
         console.log(socket.id + " " + data.x + " " + data.y + " " + data.color);
         var player = {
           id: socket.id,
+          name: data.name,
+          color: data.color,
           x: data.x,
           y: data.y,
-          teta: data.teta,
-          color: data.color
+          teta: data.teta
         }
         players.push(player);
       }

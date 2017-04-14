@@ -1,20 +1,17 @@
 var socket;
 var player;
 var otherPlayers = [];
+var running = false;
 
 setup = () => {
   createCanvas(600, 600);
 
   socket = io.connect('http://10.16.0.70:3000/');
-  player = new Player();
-
-  // send initial info to server
-  socket.emit('start', player.socketData);
+  //player = new Player();
 
   // receive data from server
   socket.on('heartbeat',
     function(data) {
-      //console.log(data);
       otherPlayers = data;
     }
   );
@@ -22,13 +19,13 @@ setup = () => {
 
 draw = () => {
   background(255);
-  player.update();
-  player.render();
-
   renderOtherPlayers();
-
-  // send data to server
-  socket.emit('update', player.socketData);
+  if(running) {
+    player.update();
+    player.render();
+    // send data to server
+    socket.emit('update', player.socketData);
+  }
 }
 
 keyPressed = () => {
@@ -76,7 +73,21 @@ renderOtherPlayers = () => {
       ellipse(0, 4*s ,s);
 
       pop();     // restore previous state
-
+      
+      textSize(16);
+      //rect(this.pos.x - 3*s, this.pos.y + 6*s, 6*s, 3*s);
+      text(player.name, player.x - 3*s, player.y + 6*s, 6*s, 3*s);
     }
   });
 }
+
+$('#player-start').on('click', () => {
+  running = true;
+  var name = $('#player-name').val();
+  var color = $('#player-color').val();
+  player = new Player(width/2, height/2);
+  player.name = name;
+  player.color = color;
+  //send initial info to server
+  socket.emit('start', player);
+});
