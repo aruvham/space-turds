@@ -1,22 +1,32 @@
 var express = require('express');
 var socket = require('socket.io');
+var _ = require('underscore');
+// var Turd = require('./models');
 
 var app = express();
 
 var players = [];
+var turds = {};
 
 // create server
-var server = app.listen(3000, '0.0.0.0');
-console.log('Server is now running...');
+var port = 1337;
+var server = app.listen(port, '0.0.0.0');
+console.log('Server running on localhost ' + port);
 // serve static files
 app.use(express.static('client'));
 
 var io = socket(server);
 
-setInterval(heartbeat, 33);
+setInterval(heartbeat, 16.6666667);
 function heartbeat() {
-  console.log(players);
+  // console.log(players);
   io.sockets.emit('heartbeat', players);
+  _.each(turds, (turd) => {
+    if(turd.delete) {
+      delete turds[turd.id];
+    }
+  });
+  // console.log(turds);
 }
 
 io.sockets.on('connection',
@@ -47,8 +57,13 @@ io.sockets.on('connection',
             players[i].x = data.x
             players[i].y = data.y
             players[i].teta = data.teta;
+            players[i].turds = data.turds;
+            // console.log(players[i].turds);
           }
         }
+
+        // _.extend(turds, data.turds);
+        // console.log(turds);
 
       }
     );
