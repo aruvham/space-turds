@@ -1,9 +1,11 @@
 var socket;
 var player;
 var otherPlayers = [];
+var running = false;
 
 setup = () => {
   createCanvas(600, 600);
+
 
   socket = io.connect('http://10.16.0.68:1337/');
   player = new Player();
@@ -11,10 +13,10 @@ setup = () => {
   // send initial info to server
   socket.emit('start', player.socketData);
 
+
   // receive data from server
   socket.on('heartbeat',
     function(data) {
-      //console.log(data);
       otherPlayers = data;
 
 
@@ -25,10 +27,13 @@ setup = () => {
 
 draw = () => {
   background(255);
-  player.update();
-  player.render();
 
-  //render turds
+  renderOtherPlayers();
+  if(running) {
+    player.update();
+    player.render();
+    
+      //render turds
   _.each(player.turds, (turd) => {
     turd.update();
     turd.render();
@@ -36,12 +41,10 @@ draw = () => {
       delete player.turds[turd.id];
     }
   });
-
-  renderOtherPlayers();
-
-  // console.log('loop');
-  // send data to server
-  socket.emit('update', player.socketData);
+    
+    // send data to server
+    socket.emit('update', player.socketData);
+  }
 }
 
 keyPressed = () => {
@@ -66,10 +69,6 @@ keyPressed = () => {
   if(keyCode == 68) player.right = absSpd;  // D
 
   if(keyCode == 32) player.shooting = true;
-
-  // player.absVelocityX = player.right - player.left;
-  // player.absVelocityY = player.down - player.up;
-  // console.log('x: ', player.absVelocityX, 'y: ', player.absVelocityY);
 }
 
 function keyReleased() {
@@ -87,11 +86,6 @@ function keyReleased() {
   if(keyCode == 68) player.right = 0;  // D
 
   if(keyCode == 32) player.shooting = false;
-
-  // player.absVelocityX = player.right - player.left;
-  // player.absVelocityY = player.down - player.up;
-  // console.log('x: ', player.absVelocityX, 'y: ', player.absVelocityY);
-
 }
 
 window.addEventListener("keydown", function(e) {
@@ -126,7 +120,22 @@ renderOtherPlayers = () => {
       _.each(player.turds, (turd) => {
         Turd.prototype.render.call(turd);
       });
+      
+      textSize(16);
+      //rect(this.pos.x - 3*s, this.pos.y + 6*s, 6*s, 3*s);
+      text(player.name, player.x - 3*s, player.y + 6*s, 6*s, 3*s);
     }
   });
 
 }
+
+$('#player-start').on('click', () => {
+  running = true;
+  var name = $('#player-name').val();
+  var color = $('#player-color').val();
+  player = new Player(width/2, height/2);
+  player.name = name;
+  player.color = color;
+  //send initial info to server
+  socket.emit('start', player);
+});
