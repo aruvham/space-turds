@@ -9,6 +9,10 @@ Generate.size = size;
 
 setup = () => {
   createCanvas(600, 600);
+  
+  asteroids = new Group();
+  tetrisColliders = new Group();
+  
   tetromino = [new Tetromino(), new Tetromino()];
   setInterval(() => {
     tetromino.shift();
@@ -16,9 +20,6 @@ setup = () => {
     tetromino.push(new Tetromino());
     tetromino.push(new Tetromino());
   }, 14000);
-  
-  asteroids = new Group();
-  tetrisColliders = new Group();
   
   createAsteroid(1, width/2, height/2);
   createAsteroid(2, width/2, height/2);
@@ -29,26 +30,23 @@ setup = () => {
 }
 
 draw = () => {
-  background(colors[0]);
+  background(colors[1]);
   tetromino.forEach(t => {
     t.update();
     Render.tetromino(t.data);
   });
   
   // asteroid wrap
-  for(var i=0; i<allSprites.length; i++) {
-  var s = allSprites[i];
-  if(s.position.x<-0) s.position.x = width+0;
-  if(s.position.x>width+0) s.position.x = -0;
-  if(s.position.y<-0) s.position.y = height+0;
-  if(s.position.y>height+0) s.position.y = -0;
-    
-  // collision
-  s.bounce(asteroids);
+  for(var i=0; i<asteroids.length; i++) {
+    var s = asteroids[i];
+    if(s.position.x<-0) s.position.x = width+0;
+    if(s.position.x>width+0) s.position.x = -0;
+    if(s.position.y<-0) s.position.y = height+0;
+    if(s.position.y>height+0) s.position.y = -0;
+    s.bounce(asteroids);
+    s.bounce(tetrisColliders);
   }
-  
-  
-  
+    
   // sprites
   drawSprites();
 }

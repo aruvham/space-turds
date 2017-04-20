@@ -2,7 +2,11 @@ function Tetromino() {
   this.flagForDestruction = false;
   this.data = {}  // data used on client side
   this.size = 20; // px
-
+  
+  //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
+  this.colliders = new Group();
+  //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
+  
   this.piece = 'SZJLIOT'[Math.floor(random(0, 6))];
   this.data.piece = this.piece;
 
@@ -13,22 +17,33 @@ function Tetromino() {
     newPoint.x = (point.x * this.size) + this.x;
     newPoint.y = (point.y * this.size) + this.y;
     this.points[i] = newPoint;
+    
+    
+    //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
+    this.createTetrisCollider(newPoint.x, newPoint.y);
+    //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
   });
+  
+  
   this.data.points = this.points;
 }
 
 Tetromino.prototype.update = function() {
   this.x += this.dx;
   this.y += this.dy;
-  this.points.forEach(point => {
+  this.points.forEach((point, idx) => {
     point.x += this.dx;
     point.y += this.dy;
+    //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
+    this.colliders[idx].position.x = point.x + this.size/2;
+    this.colliders[idx].position.y = point.y + this.size/2;
+    //ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
   });
   this.data.points = this.points;
   if(this.x > width + 5 * this.size,
      this.x < -5 * this.size,
      this.y > height + 5 * this.size,
-     this.y < -5 * this.size) this.flagForDestruction = true;
+     this.y < -5 * this.size) this.flagForDestruction = true;  
 }
 
 Tetromino.prototype.setInicialPosition = function() {
@@ -72,15 +87,14 @@ Tetromino.prototype.paths = {
   'T': [{x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y:  0}, {x:  1, y:  1}]
 }
 
-var createTetrisCollider = function(x, y, size) {
-  var a = createSprite(x, y, size, size);
-  //var img  = loadImage("assets/asteroid"+floor(random(0,3))+".png");
-  //a.addImage(img);
-  //a.setSpeed(2.5-(type/2), random(360));
-  //a.rotationSpeed = .5;
-  a.debug = true;
-  //a.type = type;
-
-  a.setCollider("circle", 0, 0, 45);  
-  asteroids.push(a);
+//ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
+Tetromino.prototype.createTetrisCollider = function(x, y) {
+  var a = createSprite(x + this.size/2, y - this.size/2, this.size, this.size);
+  //a.debug = true;
+  a.shapeColor = 'rgba(0, 0, 0, 0)'
+  a.setCollider("rectangle", 0, 0, this.size);
+  a.immovable = true;
+  this.colliders.push(a);
+  tetrisColliders.push(a);
 }
+//ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ
